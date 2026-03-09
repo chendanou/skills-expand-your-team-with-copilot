@@ -183,13 +183,6 @@ section h3 {
   line-height: 1.4;
 }
 
-.activity-card-actions {
-  margin-top: auto;
-  padding-top: 10px;
-  display: flex;
-  justify-content: center;
-}
-
 /* Activity Tag */
 .activity-tag {
   position: absolute;
@@ -610,6 +603,100 @@ footer {
   .sidebar-filters {
     width: 100%;
   }
+}
+
+/* Share button and popover */
+.share-container {
+  position: relative;
+  display: inline-block;
+}
+
+.share-button {
+  background-color: var(--background);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.share-button:hover {
+  background-color: var(--primary-light);
+  color: white;
+  border-color: var(--primary-light);
+}
+
+.share-icon {
+  font-size: 0.85rem;
+}
+
+.share-popover {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.share-option {
+  display: block;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  text-align: left;
+  text-decoration: none;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.share-option:last-child {
+  border-bottom: none;
+}
+
+.share-option:hover {
+  background-color: var(--background);
+  color: var(--primary);
+}
+
+.share-twitter:hover {
+  background-color: #e8f5fd;
+  color: #1a8cd8;
+}
+
+.share-facebook:hover {
+  background-color: #e8edf8;
+  color: #1877f2;
+}
+
+.share-whatsapp:hover {
+  background-color: #e8f5e9;
+  color: #25d366;
+}
+
+.activity-card-actions {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* User controls in header */
