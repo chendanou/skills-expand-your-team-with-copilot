@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // School name used in share messages
+  const SCHOOL_NAME = "Mergington High School";
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
@@ -568,6 +571,17 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `
         }
+        <div class="share-container">
+          <button class="share-button" aria-label="Share this activity" title="Share this activity">
+            <span class="share-icon">📤</span> Share
+          </button>
+          <div class="share-popover hidden">
+            <a class="share-option share-twitter" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on X (Twitter)">𝕏 X (Twitter)</a>
+            <a class="share-option share-facebook" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a>
+            <a class="share-option share-whatsapp" href="#" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">WhatsApp</a>
+            <button class="share-option share-copy" aria-label="Copy link">Copy Link</button>
+          </div>
+        </div>
       </div>
     `;
 
@@ -587,8 +601,90 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Set up sharing for this activity card
+    setupShareButtons(activityCard, name, details, formattedSchedule);
+
     activitiesList.appendChild(activityCard);
   }
+
+  // Set up share buttons for an activity card
+  function setupShareButtons(card, name, details, formattedSchedule) {
+    const shareButton = card.querySelector(".share-button");
+    const sharePopover = card.querySelector(".share-popover");
+    const shareText = `Check out "${name}" at ${SCHOOL_NAME}! ${details.description} Schedule: ${formattedSchedule}`;
+    const shareUrl = window.location.href;
+
+    // Use the native Web Share API if available (e.g. mobile browsers)
+    if (navigator.share) {
+      shareButton.addEventListener("click", async () => {
+        try {
+          await navigator.share({
+            title: name,
+            text: shareText,
+            url: shareUrl,
+          });
+        } catch (err) {
+          // User cancelled or share failed — silently ignore AbortError
+          if (err.name !== "AbortError") {
+            console.error("Error sharing:", err);
+          }
+        }
+      });
+      return;
+    }
+
+    // Fallback: show platform-specific share links in a popover
+    shareButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      // Close all other open popovers first
+      document.querySelectorAll(".share-popover:not(.hidden)").forEach((el) => {
+        if (el !== sharePopover) el.classList.add("hidden");
+      });
+      sharePopover.classList.toggle("hidden");
+    });
+
+    // Populate share URLs
+    const encodedText = encodeURIComponent(shareText);
+    const encodedUrl = encodeURIComponent(shareUrl);
+
+    const twitterLink = card.querySelector(".share-twitter");
+    twitterLink.href = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+
+    const facebookLink = card.querySelector(".share-facebook");
+    facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+
+    const whatsappLink = card.querySelector(".share-whatsapp");
+    whatsappLink.href = `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`;
+
+    const copyButton = card.querySelector(".share-copy");
+    copyButton.addEventListener("click", () => {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        copyButton.textContent = "Copied!";
+        setTimeout(() => {
+          copyButton.textContent = "Copy Link";
+        }, 2000);
+      }).catch(() => {
+        // Fallback for browsers without clipboard API
+        const tempInput = document.createElement("input");
+        tempInput.value = shareUrl;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        copyButton.textContent = "Copied!";
+        setTimeout(() => {
+          copyButton.textContent = "Copy Link";
+        }, 2000);
+      });
+    });
+  }
+
+  // Close share popovers when clicking outside
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".share-popover:not(.hidden)").forEach((el) => {
+      el.classList.add("hidden");
+    });
+  });
 
   // Event listeners for search and filter
   searchInput.addEventListener("input", (event) => {
